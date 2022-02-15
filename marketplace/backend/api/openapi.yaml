@@ -1,0 +1,449 @@
+openapi: "3.0.3"
+
+info:
+  title: CSE183 Final Project Backend
+  version: 0.1.0
+
+servers:
+  - url: http://localhost:3010/v0
+
+paths:
+  /category:
+    get:
+      description: Returns all category
+      parameters:
+        - in: path
+          name: subca
+          description: listing name
+          required: false
+          schema:
+            type: string
+      responses:
+        401:
+          description: Unauthorised
+        200:
+          description: Categories Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Categories"
+        default:
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnexpectedError"
+
+    # post:
+    #   description: Adds Categories
+    #   requestBody:
+    #     description: Categories to add
+    #     required: true
+    #     content:
+    #       application/json:
+    #         schema:
+    #           $ref: "#/components/schemas/Categories"
+    #   responses:
+    #     201:
+    #       description: Creates new Categories
+    #       content:
+    #         application/json:
+    #           schema:
+    #             $ref: "#/components/schemas/Categories"
+    #     400:
+    #       description: Invalid category name, only one word
+    #     409:
+    #       description: Conflict. We have alrealy have that category
+    #     default:
+    #       description: unexpected error
+    #       content:
+    #         application/json:
+    #           schema:
+    #             $ref: "#/components/schemas/UnexpectedError"
+
+  /listing:
+    get:
+      description: Returns listings (satisify the search)
+      parameters:
+        - in: query
+          name: search
+          description: listing name
+          required: false
+          schema:
+            type: string
+        - name: filterValues
+          in: query
+          description: filters for this search listing
+          required: false
+          schema:
+            $ref: "#/components/schemas/FilterValueList"
+      responses:
+        200:
+          description: found listings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Listings"
+        404:
+          description: Listings not found
+        default:
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnexpectedError"
+    post:
+      description: Adds listings
+      requestBody:
+        description: listings to add
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Listings"
+      responses:
+        201:
+          description: Creates new listings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Listings"
+        400:
+          description: Invalid listings
+        409:
+          description: Conflict uuid. We have alrealy have that listing
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnexpectedError"
+
+  /listing/{category}:
+    get:
+      description: Returns listings of that category
+      parameters:
+        - name: category
+          in: path
+          description: category name
+          required: true
+          schema:
+            type: string
+        - name: filterValues
+          in: query
+          description: filters for this search listing
+          required: false
+          schema:
+            $ref: "#/components/schemas/FilterValueList"
+
+      responses:
+        200:
+          description: found listings of that category
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Listings"
+        400:
+          description: Invalid category name
+        404:
+          description: Category not found
+        default:
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnexpectedError"
+  /listing/{category}/{subcategory}:
+    get:
+      description: Returns listings of that category and subcategory
+      parameters:
+        - name: category
+          in: path
+          description: category name
+          required: true
+          schema:
+            type: string
+        - name: subcategory
+          in: path
+          description: category name
+          required: true
+          schema:
+            type: string
+        - name: filterValues
+          in: query
+          description: filters for this search listing
+          required: false
+          schema:
+            $ref: "#/components/schemas/FilterValueList"
+      responses:
+        200:
+          description: found listings of that category or sub
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Listings"
+        400:
+          description: Invalid category name
+        404:
+          description: Category not found
+        default:
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnexpectedError"
+
+  /user:
+    post:
+      description: Adds new user
+      requestBody:
+        description: user to add
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Person"
+      responses:
+        201:
+          description: Creates new user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Person"
+        400:
+          description: Invalid user with duplicated email
+        409:
+          description: Conflict uuid. We have alrealy have that listing
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnexpectedError"
+    # put:
+    #   description: Update the user
+    #   parameters:
+    #     - in: path
+    #       name: id
+    #       description: mail id
+    #       required: true
+    #       schema:
+    #         type: string
+    #         format: uuid
+    #     - in: query
+    #       name: mailbox
+    #       description: mailbox name
+    #       required: true
+    #       schema:
+    #         type: string
+    #   responses:
+    #     204:
+    #       description: Success move
+    #     400:
+    #       description: Bad requestBody
+    #     404:
+    #       description: Email Not Found
+    #     409:
+    #       description: Move a mail to 'sent' mailbox that is not alrealy in it
+
+    #     default:
+    #       description: Unexpected Error
+    #       content:
+    #         application/json:
+    #           schema:
+    #             $ref: "#/components/schemas/Error"
+    # get:
+    #   description: Dummy thing
+    #   parameters:
+    #     - in: query
+    #       name: search
+    #       description: listing name
+    #       required: false
+    #       schema:
+    #         type: string
+    #   responses:
+    #     200:
+    #       description: found listings
+    #       content:
+    #         application/json:
+    #           schema:
+    #             $ref: "#/components/schemas/Listings"
+    #     404:
+    #       description: Listings not found
+    #     default:
+    #       description: Unexpected Error
+    #       content:
+    #         application/json:
+    #           schema:
+    #             $ref: "#/components/schemas/UnexpectedError"
+
+components:
+  schemas:
+    UnexpectedError:
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+
+    Categories:
+      type: array
+      items:
+        $ref: "#/components/schemas/Category"
+
+    Category:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          pattern: "^[a-zA-Z0-9_]+$"
+        filters:
+          $ref: "#/components/schemas/FiltersObject"
+        subcategories:
+          $ref: "#/components/schemas/SubcategoriesObject"
+      required:
+        - name
+        - id
+        - filters
+        - subcategories
+
+    Listings:
+      type: array
+      items:
+        $ref: "#/components/schemas/Listing"
+
+    Listing:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        price:
+          type: string
+        longitude:
+          type: string
+          # pattern: "^-?((0|1?[0-7]?[0-9]?)(([.][0-9]{1,6})?)|180(([.][0]{1,6})?))$"
+        latitude:
+          type: string
+          # pattern: "^-?((0|[1-8]?[0-9]?)(([.][0-9]{1,6})?)|90(([.][0]{1,6})?))$"
+        img_url:
+          type: string
+        category:
+          type: string
+        create_user:
+          type: string
+        create_time:
+          type: string
+          format: date-time
+        replies:
+          $ref: "#/components/schemas/Replies"
+      required:
+        - id
+        - name
+        - price
+        - longitude
+        - latitude
+        - img_url
+        - category
+        - create_time
+        - create_user
+        - replies
+
+    Replies:
+      type: array
+      items:
+        $ref: "#/components/schemas/Reply"
+
+    Reply:
+      type: object
+      properties:
+        replyer:
+          type: string
+          format: uuid
+        content:
+          type: string
+
+    Person:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+        role:
+          type: string
+      required:
+        - email
+        - password
+
+    FiltersObject:
+      type: object
+      properties:
+        filters:
+          $ref: "#/components/schemas/Filters"
+
+    Filters:
+      type: array
+      items:
+        $ref: "#/components/schemas/Filter"
+
+    Filter:
+      type: object
+      properties:
+        filter_name:
+          type: string
+        hasMaxMin:
+          type: boolean
+      required:
+        - filter_name
+        - hasMaxMin
+
+    FilterValueList:
+      type: array
+      items:
+        $ref: "#/components/schemas/FilterValue"
+
+    FilterValue:
+      type: object
+      properties:
+        filter_name:
+          type: string
+        max:
+          type: string
+        min:
+          type: string
+      required:
+        - filter_name
+
+    SubcategoriesObject:
+      type: object
+      properties:
+        subcategories:
+          $ref: "#/components/schemas/Subcategories"
+
+    Subcategories:
+      type: array
+      items:
+        type: string
+
+  securitySchemes:
+    bearerAuth: # arbitrary name for the security scheme
+      type: http
+      scheme: bearer
+      bearerFormat: JWT # optional, arbitrary value for documentation purposes
+
+security:
+  - bearerAuth: [] # use the same name as above
